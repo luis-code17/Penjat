@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         ArrayList<Users> usersList = loadUsers();
-        ArrayList<Words> parules = loadWords();
+        ArrayList<String> parules = loadWords();
 
 
         addAdminAndWord(usersList, parules);
@@ -90,7 +90,7 @@ public class Main {
      * @param sc
      * @param usersList
      */
-    public static void manageAdmin(Scanner sc, ArrayList<Users> usersList, ArrayList<Words> parules) {
+    public static void manageAdmin(Scanner sc, ArrayList<Users> usersList, ArrayList<String> parules) {
         int option;
         do {
             do {
@@ -132,7 +132,7 @@ public class Main {
      * @param sc
      * @param parules
      */
-    public static void manageUser(Scanner sc, ArrayList<Words> parules) {
+    public static void manageUser(Scanner sc, ArrayList<String> parules) {
         int option;
         do {
             do {
@@ -280,7 +280,7 @@ public class Main {
     /**
      * Joc del penjat amb les paraules de l'arraylist
      */
-    public static void newGame(ArrayList<Words> parules, Scanner sc) {
+    public static void newGame(ArrayList<String> parules, Scanner sc) {
         int random = (int) (Math.random() * parules.size()); // Genera un numero aleatori entre 0 i la mida de l'arraylist
         String word = parules.get(random); // Obtenim la paraula aleatoria
         char[] wordArray = word.toCharArray(); // Convertim la paraula en un array de caracters
@@ -340,7 +340,7 @@ public class Main {
     /**
      * Funció per agregar l' usuari admin i la paraula poma al fitxer si no n'hi ha
      */
-    public static void addAdminAndWord(ArrayList<Users> usersList, ArrayList<Words> parules) {
+    public static void addAdminAndWord(ArrayList<Users> usersList, ArrayList<String> parules) {
         boolean admin = false;
         boolean poma = false;
         for (Users u : usersList) {
@@ -448,7 +448,7 @@ public class Main {
      * @param word
      * @return
      */
-    public static boolean checkWord(ArrayList<Words> parules, String word) {
+    public static boolean checkWord(ArrayList<String> parules, String word) {
         for (String p : parules) {
             if (p.equals(word)) {
                 return true;
@@ -462,7 +462,7 @@ public class Main {
      *
      * @param parules
      */
-    public static void saveWords(ArrayList<Words> parules) {
+    public static void saveWords(ArrayList<String> parules) {
         try {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("words.txt"));
             for (String p : parules) {
@@ -480,7 +480,7 @@ public class Main {
      *
      * @return
      */
-    public static ArrayList<Words> loadWords() {
+    public static ArrayList<String> loadWords() {
         File file = new File("words.txt");
         if (!file.exists()) {
             return new ArrayList<>();
@@ -506,7 +506,7 @@ public class Main {
      *
      * @param parules
      */
-    public static void printWords(ArrayList<Words> parules) {
+    public static void printWords(ArrayList<String> parules) {
         for (String p : parules) {
             System.out.println(p);
         }
@@ -518,7 +518,7 @@ public class Main {
      * @param parules
      * @param sc
      */
-    public static void addWords(ArrayList<Words> parules, Scanner sc) {
+    public static void addWords(ArrayList<String> parules, Scanner sc) {
         String word;
         sc.nextLine(); // Clear the buffer
         do {
