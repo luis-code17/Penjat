@@ -2,7 +2,7 @@ import java.io.Serializable;
 
 public class Words implements Serializable {
     private String word;
-    private int points;
+    private int points; // Cambiar a long
 
     public Words(String word, int points) {
         this.word = word;
@@ -17,11 +17,11 @@ public class Words implements Serializable {
         this.word = word;
     }
 
-    public int getPoints() {
+    public long getPoints() { // Cambiar a long
         return points;
     }
 
-    public void setPoints(int points) {
+    public void setPoints(int points) { // Cambiar a long
         this.points = points;
     }
 

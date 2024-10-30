@@ -5,10 +5,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         ArrayList<Users> usersList = loadUsers();
-        ArrayList<Words> parules = loadWords();
+        ArrayList<Words> paraules = loadWords();
 
 
-        addAdminAndWord(usersList, parules);
+        addAdminAndWord(usersList, paraules);
 
         Scanner sc = new Scanner(System.in);
         int option;
@@ -22,9 +22,9 @@ public class Main {
                 case 2:
                     userMenu = login(sc, usersList);
                     if (userMenu) { // Si es admin
-                        manageAdmin(sc, usersList, parules);
+                        manageAdmin(sc, usersList, paraules);
                     } else { // Si es usuari comu
-                        manageUser(sc, parules);
+                        manageUser(sc, paraules);
                     }
                     break;
                 case 3:
@@ -90,7 +90,7 @@ public class Main {
      * @param sc
      * @param usersList
      */
-    public static void manageAdmin(Scanner sc, ArrayList<Users> usersList, ArrayList<Words> parules) {
+    public static void manageAdmin(Scanner sc, ArrayList<Users> usersList, ArrayList<Words> paraules) {
         int option;
         do {
             do {
@@ -111,13 +111,13 @@ public class Main {
                     printUsers(usersList);
                     break;
                 case 2:
-                    printWords(parules);
+                    printWords(paraules);
                     break;
                 case 3:
-                    addWords(parules, sc);
+                    addWords(paraules, sc);
                     break;
                 case 4:
-                    newGame(parules, sc);
+                    newGame(paraules, sc);
                     break;
                 case 5:
                     System.out.println("Adeu, admin!");
@@ -130,9 +130,9 @@ public class Main {
      * Gestiona la navegació de l'usuari
      *
      * @param sc
-     * @param parules
+     * @param paraules
      */
-    public static void manageUser(Scanner sc, ArrayList<Words> parules) {
+    public static void manageUser(Scanner sc, ArrayList<Words> paraules) {
         int option;
         do {
             do {
@@ -150,7 +150,7 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    newGame(parules, sc);
+                    newGame(paraules, sc);
                     break;
                 case 2:
                     System.out.println("Adeu!");
@@ -280,9 +280,9 @@ public class Main {
     /**
      * Joc del penjat amb les paraules de l'arraylist
      */
-    public static void newGame(ArrayList<Words> parules, Scanner sc) {
-        int random = (int) (Math.random() * parules.size()); // Genera un numero aleatori entre 0 i la mida de l'arraylist
-        String word = parules.get(random); // Obtenim la paraula aleatoria
+    public static void newGame(ArrayList<Words> paraules, Scanner sc) {
+        int random = (int) (Math.random() * paraules.size()); // Genera un numero aleatori entre 0 i la mida de l'arraylist
+        String word = paraules.get(random); // Obtenim la paraula aleatoria
         char[] wordArray = word.toCharArray(); // Convertim la paraula en un array de caracters
         char[] wordHidden = new char[wordArray.length]; // Array de caracters ocults
         for (int i = 0; i < wordArray.length; i++) { // Omplim l'array de caracters ocults amb guions baixos
@@ -340,7 +340,7 @@ public class Main {
     /**
      * Funció per agregar l' usuari admin i la paraula poma al fitxer si no n'hi ha
      */
-    public static void addAdminAndWord(ArrayList<Users> usersList, ArrayList<Words> parules) {
+    public static void addAdminAndWord(ArrayList<Users> usersList, ArrayList<Words> paraules) {
         boolean admin = false;
         boolean poma = false;
         for (Users u : usersList) {
@@ -348,8 +348,8 @@ public class Main {
                 admin = true;
             }
         }
-        for (String p : parules) {
-            if (p.equals("poma")) {
+        for (Words p : paraules) {
+            if (p.getWord().equals("poma")) {
                 poma = true;
             }
         }
@@ -357,7 +357,7 @@ public class Main {
             usersList.add(new Users("Admin", "admin", "admin", true, 0));
         }
         if (!poma) {
-            parules.add("poma");
+            paraules.add(new Words("poma", 1));
         }
     }
 
@@ -439,18 +439,16 @@ public class Main {
     }
 
 
-    //Word
-
     /**
      * Comprova si la paraula existeix
      *
-     * @param parules
-     * @param word
-     * @return
+     * @param paraules  arraylist de paraules (Words)
+     * @param wordString paraula a comprovar
+     * @return true si existeix, false si no
      */
-    public static boolean checkWord(ArrayList<Words> parules, String word) {
-        for (String p : parules) {
-            if (p.equals(word)) {
+    public static boolean checkWord(ArrayList<Words> paraules, String wordString) {
+        for (Words p : paraules) {
+            if (p.getWord().equals(wordString) ) { //comprova si la paraula coincideix amb els de l'arraylist
                 return true;
             }
         }
@@ -458,56 +456,91 @@ public class Main {
     }
 
     /**
-     * Guarda les paraules a un fitxer
-     *
-     * @param parules
+     * Desa les paraules al fitxer words.dat en format UTF-8 (50 bytes per paraula i 8 bytes per puntuació).
+     * @param words L'arraylist de paraules a desar al fitxer words.dat
      */
-    public static void saveWords(ArrayList<Words> parules) {
-        try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("words.txt"));
-            for (String p : parules) {
-                out.writeObject(p);
-            }
+    public static void saveWords(ArrayList<Words> words) {
+        try (RandomAccessFile file = new RandomAccessFile("words.dat", "rw")) {
+            for (Words word : words) {
+                //si la paraula és més curta de 50 bytes, omplirà amb espais
+                String formattedWord = String.format("%-50s", word.getWord());
+                /*
+                 * "%-50s" s'utilitza en Java per formatar cadenes de text:
+                 *
+                 * %: Indica l'inici d'una especificació de format.
+                 * -: Indica que el text s'alinearà a l'esquerra. Sense el -, la cadena s'alinearia a la dreta.
+                 * 50: Especifica l'ample mínim del camp; la cadena ocuparà almenys 50 caràcters.
+                 *     Si la cadena és més curta, es completarà amb espais en blanc a la dreta.
+                 */
 
-            out.close();
+
+                // Escriure la paraula com a bytes (50 bytes)
+                file.write(formattedWord.getBytes("UTF-8"));
+                //utilitzem UTF-8 per a que no hi hagi problemes amb els caràcters especials
+
+                // Escriure la puntuació com a long (8 bytes)
+                file.writeLong(word.getPoints()); // Escriu la puntuació com a long (8 bytes)
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Carrega les paraules del fitxer
-     *
-     * @return
+     * Carrega una paraula del fitxer words.dat
+     * @param num El número de la paraula a carregar
+     * @return La paraula carregada
+     */
+    public static Words loadWord(int num) {
+        Words word = null;
+        // calcula quantes paraules hi ha file size 54b?
+        try (RandomAccessFile file = new RandomAccessFile("words.dat", "r")) { // Obre el fitxer en mode lectura
+            // El fitxer es llegeix en mode RandomAccessFile perquè les paraules ocupen 50 bytes i la puntuació 4 bytes (int).
+            int bytesFile = (int) file.length();
+            int numWords = bytesFile / 54;
+
+            file.seek(num*54);
+            // Llegeix la paraula del fitxer (se suposa que ocupa 50 bytes)
+            String wordString = file.readUTF().trim(); // Llegeix la paraula i elimina espais en blanc
+            int points = file.readInt(); // Llegeix la puntuació del fitxer
+            word = new Words(wordString, points);
+
+        } catch (IOException e) { // Maneig d'excepcions en cas d'errors d'entrada/sortida
+            e.printStackTrace(); // Imprimeix l'error si ocorre una excepció
+        }
+
+
+        return word;
+    }
+
+
+    /**
+     * Carrega les paraules del fitxer words.dat en un arraylist utilitzant la funció loadWord
+     * @return L'arraylist de paraules carregades
      */
     public static ArrayList<Words> loadWords() {
-        File file = new File("words.txt");
-        if (!file.exists()) {
-            return new ArrayList<>();
-        }
-        ArrayList<String> words = new ArrayList<>();
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-            while (true) {
-                try {
-                    String word = (String) in.readObject();
-                    words.add(word);
-                } catch (EOFException e) {
-                    break; // End of file reached
-                }
+        ArrayList<Words> words = new ArrayList<>();
+        //for con la funcion loadWord
+        try (RandomAccessFile file = new RandomAccessFile("words.dat", "r")) {
+            int bytesFile = (int) file.length();
+            int numWords = bytesFile / 54;
+            for (int i = 0; i < numWords; i++) {
+                Words word = loadWord(i);
+                words.add(word);
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return words;
+        return words; // Retorna la llista de paraules carregades
     }
 
     /**
      * Mostra les paraules
      *
-     * @param parules
+     * @param paraules
      */
-    public static void printWords(ArrayList<Words> parules) {
-        for (String p : parules) {
+    public static void printWords(ArrayList<Words> paraules) {
+        for (Words p : paraules) {
             System.out.println(p);
         }
     }
@@ -515,26 +548,42 @@ public class Main {
     /**
      * Afegeix paraules y les guarda al fitxer
      *
-     * @param parules
+     * @param paraules
      * @param sc
      */
-    public static void addWords(ArrayList<Words> parules, Scanner sc) {
-        String word;
+    public static void addWords(ArrayList<Words> paraules, Scanner sc) {
+        String wordString;
         sc.nextLine(); // Clear the buffer
+        int points = 0;
         do {
             System.out.print("Digues la paraula que vols afegir: ");
-            word = sc.nextLine();
-            if (!word.matches("[A-Za-z]+")) {
+            wordString = sc.nextLine();
+            if (!wordString.matches("[A-Za-z]+")) {
                 System.out.println("Nom invalid");
             }
-        } while (!word.matches("[A-Za-z]+"));
+        } while (!wordString.matches("[A-Za-z]+"));
 
-        boolean exists = checkWord(parules, word);
+        do {
+            System.out.print("Digues els punts de la paraula: ");
+            if (!sc.hasNextInt()) {
+                sc.next();
+                System.out.println("Introdueix un número, si us plau");
+                points = 0;
+            } else {
+                points = sc.nextInt();
+            }
+            if (points <= 0) {
+                System.out.println("Punts invalids");
+                System.out.println("Els punts han de ser més grans que 0");
+            }
+        }while (points <= 0);
+
+        boolean exists = checkWord(paraules, wordString);
         if (exists) {
             System.out.println("La paraula ja existeix");
         } else {
-            parules.add(word);
-            saveWords(parules);
+            paraules.add(new Words(wordString, points));
+            saveWords(paraules);
             System.out.println("Paraula afegida correctament");
         }
     }
