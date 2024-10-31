@@ -1,8 +1,8 @@
 import java.io.Serializable;
 
 public class Words implements Serializable {
-    private String word;
-    private int points; // Cambiar a long
+    private final String word;
+    private int points;
 
     public Words(String word, int points) {
         this.word = word;
@@ -13,17 +13,14 @@ public class Words implements Serializable {
         return word;
     }
 
-    public void setWord(String word) {
-        this.word = word;
-    }
-
-    public long getPoints() { // Cambiar a long
+    public int getPoints() {
         return points;
     }
 
-    public void setPoints(int points) { // Cambiar a long
+    public void setPoints(int points) {
         this.points = points;
     }
+
 
     @Override
     public String toString() {
