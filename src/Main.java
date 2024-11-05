@@ -545,6 +545,7 @@ public class Main {
                  * -: Indica que el text s'alinearà a l'esquerra. Sense el -, la cadena s'alinearia a la dreta.
                  * 50: Especifica l'ample mínim del camp; la cadena ocuparà almenys 50 caràcters.
                  *     Si la cadena és més curta, es completarà amb espais en blanc a la dreta.
+                 * s: Indica que es tracta d'una cadena de text.
                  */
 
                 // Escriure la paraula com a bytes (50 bytes)
