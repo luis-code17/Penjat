@@ -3,7 +3,16 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    private static String wordFile;
+    private static String userFile;
+    
     public static void main(String[] args) {
+
+        ConfigXML config = new ConfigXML();
+        config.readXML("config.xml");
+        wordFile = config.getWordFile();
+        userFile= config.getUserFile();
+
         checkFile();
         addAdminAndWord();
 
@@ -396,7 +405,7 @@ public class Main {
      * Comprova si els fitxers users.dat i words.dat existeixen, si no, els crea
      */
     public static void checkFile() {
-        File file = new File("users.dat");
+        File file = new File(userFile);
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -405,7 +414,7 @@ public class Main {
             }
         }
 
-        file = new File("words.dat");
+        file = new File(wordFile);
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -426,7 +435,7 @@ public class Main {
     public static void saveUser(ArrayList<Users> usersList) {
 
         try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("users.dat"));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(userFile));
             for (Users u : usersList) {
                 out.writeObject(u);
             }
@@ -443,7 +452,7 @@ public class Main {
      * @return
      */
     public static ArrayList<Users> loadUsers() {
-        File file = new File("users.dat");
+        File file = new File(userFile);
         if (!file.exists()) {
             return new ArrayList<>();
         }
@@ -533,7 +542,7 @@ public class Main {
      * @param words L'arraylist de paraules a desar al fitxer words.dat
      */
     public static void saveWords(ArrayList<Words> words) {
-        try (RandomAccessFile file = new RandomAccessFile("words.dat", "rw")) {
+        try (RandomAccessFile file = new RandomAccessFile(wordFile, "rw")) {
             file.setLength(0); // Esborra el contingut del fitxer abans de guardar
 
             for (Words word : words) {
@@ -569,7 +578,7 @@ public class Main {
     public static Words loadWord(int num) {
         Words word = null;
         // calcula quantes paraules hi ha file size 54b?
-        try (RandomAccessFile file = new RandomAccessFile("words.dat", "r")) { // Obre el fitxer en mode lectura
+        try (RandomAccessFile file = new RandomAccessFile(wordFile, "r")) { // Obre el fitxer en mode lectura
             // El fitxer es llegeix en mode RandomAccessFile perquè les paraules ocupen 50 bytes i la puntuació 4 bytes (int).
             int bytesFile = (int) file.length();
             int numWords = bytesFile / 54;
@@ -599,7 +608,7 @@ public class Main {
     public static ArrayList<Words> loadWords() {
         ArrayList<Words> words = new ArrayList<>();
         //for con la funcion loadWord
-        try (RandomAccessFile file = new RandomAccessFile("words.dat", "r")) {
+        try (RandomAccessFile file = new RandomAccessFile(wordFile, "r")) {
             int bytesFile = (int) file.length();
             int numWords = bytesFile / 54;
             for (int i = 0; i < numWords; i++) {
