@@ -439,8 +439,8 @@ public class Main {
             for (Users u : usersList) {
                 out.writeObject(u);
             }
-
             out.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -538,7 +538,7 @@ public class Main {
     }
 
     /**
-     * Desa les paraules al fitxer words.dat (50 bytes per paraula i 8 bytes per puntuació).
+     * Desa les paraules al fitxer words.dat (50 bytes per paraula i 4 bytes per puntuació).
      * @param words L'arraylist de paraules a desar al fitxer words.dat
      */
     public static void saveWords(ArrayList<Words> words) {
